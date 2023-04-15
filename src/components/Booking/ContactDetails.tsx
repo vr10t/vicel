@@ -67,7 +67,7 @@ export default function ContactDetails() {
             .min(2, "Name is too short")
             .max(50, "Name is too long")
             .matches(
-              /^[A-z]+(([',. [a-z ][A-Z ])?[-]?[a-zA-Z]*)*$/,
+              /^[A-Za-z]+(?:[-',. ][A-Za-z]+)*$/,
               "Name must not contain invalid characters"
             ),
 
@@ -76,7 +76,7 @@ export default function ContactDetails() {
             .min(2, "Name is too short")
             .max(50, "Name is too long")
             .matches(
-              /^[A-z]+(([',. [a-z ][A-Z ])?[-]?[a-zA-Z]*)*$/,
+              /^[A-Za-z]+(?:[-',. ][A-Za-z]+)*$/,
               "Name must not contain invalid characters"
             ),
 
