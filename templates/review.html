@@ -1,0 +1,109 @@
+<html>
+  <head>
+    <title>We hope you had a great trip with us!</title>
+    <style type="text/css">
+      /* Add some styling to the email */
+      body {
+        font-family: Arial, sans-serif;
+        color: #000000;
+        background-color: #ffffff;
+        margin: 0;
+      }
+      h1 {
+        color: #0EA5E9;
+        font-size: 32px;
+        text-align: center;
+        margin: 16px 0;
+      }
+      a {
+        color: #0EA5E9;
+      }
+      img {
+        max-width: 100%;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 16px;
+      }
+      .logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .logo img {
+        height: 64px;
+      }
+      .logo h1 {
+        margin: 0;
+      }
+      .review-button {
+        display: block;
+        width: 200px;
+        margin: 16px auto;
+        padding: 8px 16px;
+        background-color: #0EA5E9;
+        color: #ffffff;
+        font-size: 16px;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 4px;
+      }
+      .review-button:hover {
+        background-color: #0EA5E9;
+      }
+       .footer {
+        background-color: #161C27;
+        color: #ffffff;
+        padding: 32px;
+      }
+      .footer a {
+        color: #ffffff;
+      }
+      .footer .links {
+        display: flex;
+        justify-content: space-between;
+      }
+      .footer .info {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 16px;
+      }
+      .footer .info div {
+        flex: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo">
+        <!-- Add the company logo -->
+        <img src="https://www.vicel.co.uk/logo.svg" alt="Vicel logo">
+      </div>
+      <h1>We hope you had a great trip with us!</h1>
+      <p>Dear ${name},</p>
+      <p>We hope you had a great trip with us and that everything went smoothly. We always strive to provide the best possible service to our customers, and your feedback is crucial in helping us improve.</p>
+      <p>If you have a few minutes, we would greatly appreciate it if you could leave us a review. Your honest feedback will help us learn and grow, and it will also help other travelers make informed decisions about their own trips.</p>
+      <!-- Add a review button -->
+      <a href="${reviewLink}" class="review-button">Leave a review</a>
+      <p>Thank you for choosing <b>Vicel </b> for your travel needs. We hope to see you again soon!</p>
+      <p>Best regards,</p>
+      <p><b>Vicel</b></p>
+<div class="footer">
+  <div class="links">
+    <a href="https://www.vicel.co.uk/#FAQ">FAQ</a>
+    <a href="https://www.vicel.co.uk/#contact">Contact Us</a>
+    <a href="https://www.vicel.co.uk/privacy">Privacy</a>
+    <a href="https://www.vicel.co.uk/terms">Terms</a>
+  </div>
+  <div class="info">
+    <div>Vicel Ltd.</div>
+    <div>Hemel Hempstead</div>
+  </div>
+</div>
+
+    </div>
+    <!-- Add the footer -->
+  </body>
+
+</html>

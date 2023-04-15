@@ -1,0 +1,81 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+body {
+  background-color: rgb(243 244 246);
+
+  max-width: 100%;
+}
+html {
+  max-width: 100%;
+}
+.PhoneInputInput {
+  @apply field !rounded-l-none
+}
+.PhoneInputInput:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+.PhoneInputInput::placeholder {
+  color: rgb(156 163 175);
+}
+path,
+svg,
+circle {
+  z-index: 99;
+}
+
+.EZDrawer__container {
+  background-color: rgba(255, 255, 255, 1) !important;
+  z-index: 999 !important;
+}
+.btn {
+  @apply px-4 py-1 shadow rounded-full bg-blue-700 text-white focus:ring-1 ring-blue-700 transition-all duration-200 ease-in-out hover:bg-gray-50/50 hover:text-blue-700 hover:scale-105 hover:ring-1 text-center;
+}
+.btn:disabled {
+  @apply cursor-not-allowed text-white ring-gray-600 bg-gray-500
+}
+.btn.pink {
+  @apply bg-pink-700 ring-pink-700 hover:text-pink-700 hover:bg-gray-50/50 focus:ring-pink-700;
+}
+.btn.red {
+    @apply bg-red-600 ring-red-700 hover:text-red-700 hover:bg-gray-50/50;
+}
+.btn.green {
+  @apply bg-green-600 ring-green-700 hover:text-green-700 hover:bg-gray-50/50;
+}
+.btn.gradient {
+  @apply bg-gradient-to-tr from-indigo-800 via-fuchsia-600 to-[#DAA520] ring-indigo-800 hover:text-indigo-800 hover:from-gray-50/50 hover:to-gray-50/50 focus:ring-fuchsia-700 focus:hover:ring-indigo-700;
+}
+.btn.lg {
+  @apply px-6 py-2 text-lg font-semibold;
+}
+.input {
+  @apply flex my-2 rounded-lg w-80;
+}
+.input span {
+  @apply inline-flex items-center px-3 text-lg shadow rounded-l-md bg-blue-700 text-gray-50;
+}
+.field {
+  @apply w-full px-4 py-2 text-base text-gray-700 placeholder-gray-500 border-0 shadow appearance-none rounded-md bg-white/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-600;
+}
+
+.field.left {
+  @apply rounded-l-none;
+}
+
+.input.full {
+  @apply w-full;
+}
+.warning {
+    @apply pointer-events-none text-red-600
+}
+.input label {
+  @apply self-start text-base font-medium text-gray-900;
+}
+.label {
+  @apply text-sm font-bold text-gray-800 uppercase;
+}
+.label.lg {
+    @apply text-lg;
+}

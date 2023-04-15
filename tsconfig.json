@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "types": [
+      "jest",
+      "testing-library__jest-dom",
+      "node"
+    ],
+    "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/components/Map.tsx",
+    "src/components/Booking/ContactDetails.tsx",
+    "jest.config.js"
+, "__mocks__/styleMock.js", "__mocks__/styleMock.js"  ]
+}
