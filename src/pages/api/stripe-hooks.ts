@@ -187,6 +187,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(500).json("Error confirming booking");
       }
 
+      // if booking is in less than a week don't create a task
+      if (
+        dayjs(event.data.object.metadata.dateTime).diff(dayjs(), "day") <= 7
+      ) {
+        return res.status(200).json("Status updated, mergent task skipped");
+      }
       // create a Task
       console.log("Trying to create mergent task");
       mergent.tasks

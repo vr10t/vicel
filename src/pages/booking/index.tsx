@@ -24,7 +24,14 @@ import { bookingStore, secureStore } from "../../store/bookingStore";
 import { trpc } from "../../utils/trpc";
 import userStore from "../../store/user";
 import { supabase } from "../../utils/supabaseClient";
-import { Event } from "../api/stripe-hooks";
+import {
+  MAX_PASSENGERS_STD,
+  MAX_PASSENGERS_PC,
+  MAX_PASSENGERS_MPV,
+  MAX_LUGGAGE_MPV,
+  MAX_LUGGAGE_STD,
+  MAX_LUGGAGE_PC,
+} from "../../../config";
 
 export default function Booking() {
   const {
@@ -56,7 +63,7 @@ export default function Booking() {
     setUserId,
     setTotalTripPrice,
     total_trip_price,
-    google
+    google,
   } = secureStore();
   const router = useRouter();
   const { user } = userStore();
@@ -121,7 +128,7 @@ export default function Booking() {
       first_name &&
       last_name &&
       email &&
-      phone 
+      phone
     ) {
       try {
         // z.string().email().parse(email);
@@ -218,13 +225,13 @@ export default function Booking() {
     setLoading(false);
   }
   async function signInWithGoogle() {
-        const {
-          data: { provider },
-          error,
-        } = await supabase.auth.signInWithOAuth({
-          provider: "google",
-        });
-      setLoading(false);
+    const {
+      data: { provider },
+      error,
+    } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+    });
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -320,10 +327,8 @@ export default function Booking() {
               role="listbox"
               aria-label="Service"
               className="">
-              <div className="label lg">
-                CHOOSE YOUR SERVICE
-              </div>
-              {passengers <= 3 && (
+              <div className="label lg">CHOOSE YOUR SERVICE</div>
+              {passengers <= MAX_PASSENGERS_STD && (
                 <Service
                   name="Standard Car"
                   htmlFor="Standard"
@@ -335,19 +340,20 @@ export default function Booking() {
                       alt="Standard"
                     />
                   }
-                  passengers="3"
-                  luggage="3"
+                  passengers={MAX_PASSENGERS_STD.toString()}
+                  luggage={MAX_LUGGAGE_STD.toString()}
                   selected={serviceSelected === "Standard"}>
                   <div className="flex flex-col items-center justify-center">
                     <p className="max-w-xs px-2 text-sm text-gray-600">
-                      Saloon car with standard service. Includes up to 3
-                      passengers and 3 luggage.
+                      Saloon car with standard service. Includes up to{" "}
+                      {MAX_PASSENGERS_STD}
+                      passengers and {MAX_LUGGAGE_STD} luggage.
                     </p>
                   </div>
                 </Service>
               )}
 
-              {passengers <= 6 && (
+              {passengers <= MAX_PASSENGERS_PC && (
                 <Service
                   name="People Carrier"
                   htmlFor="PC"
@@ -359,19 +365,20 @@ export default function Booking() {
                       alt="People Carrier"
                     />
                   }
-                  passengers="6"
-                  luggage="6"
+                  passengers={MAX_PASSENGERS_PC.toString()}
+                  luggage={MAX_LUGGAGE_PC.toString()}
                   selected={serviceSelected === "PC"}>
                   <div className="flex flex-col items-center justify-center">
                     <p className="max-w-xs px-2 text-sm text-gray-600">
-                      Family size vehicle with premium service. Includes up to 6
-                      passengers and 6 luggage.
+                      Family size vehicle with premium service. Includes up to{" "}
+                      {MAX_PASSENGERS_PC}
+                      passengers and {MAX_LUGGAGE_PC} luggage.
                     </p>
                   </div>
                 </Service>
               )}
 
-              {passengers <= 8 && (
+              {passengers <= MAX_PASSENGERS_MPV && (
                 <Service
                   name="MPV"
                   htmlFor="MPV"
@@ -383,13 +390,14 @@ export default function Booking() {
                       alt="MPV"
                     />
                   }
-                  passengers="8"
-                  luggage="8"
+                  passengers={MAX_PASSENGERS_MPV.toString()}
+                  luggage={MAX_LUGGAGE_MPV.toString()}
                   selected={serviceSelected === "MPV"}>
                   <div className="flex flex-col items-center justify-center">
                     <p className="max-w-xs px-2 text-sm text-gray-600">
-                      Large vehicle suitable for groups. Includes up to 8
-                      passengers and 8 luggage.
+                      Large vehicle suitable for groups. Includes up to{" "}
+                      {MAX_PASSENGERS_MPV}
+                      passengers and {MAX_LUGGAGE_MPV} luggage.
                     </p>
                   </div>
                 </Service>
@@ -422,32 +430,33 @@ export default function Booking() {
             </section>
             {flight_monitoring && <FlightMonitoring />}
             <section className="">
-              <div className="label mt-2">
-                SPECIAL INSTRUCTIONS
-              </div>
+              <div className="label mt-2">SPECIAL INSTRUCTIONS</div>
               <label htmlFor="instructions" className="">
-              <textarea
-                aria-label="instructions"
-                value={instructions}
-                onChange={(e) => setInstructions(e.target.value)}
-                className="w-full p-2 text-gray-900 border-0 rounded-lg shadow bg-gray-50"
-              /> </label>
+                <textarea
+                  aria-label="instructions"
+                  value={instructions}
+                  onChange={(e) => setInstructions(e.target.value)}
+                  className="w-full p-2 text-gray-900 border-0 rounded-lg shadow bg-gray-50"
+                />{" "}
+              </label>
             </section>
           </div>
           <div className="sticky hidden float-right lg:flex ">
-            {google &&
-            <SummaryLg
+            {google && (
+              <SummaryLg
+                onSubmit={handleBooking}
+                disabled={!canSubmit || loading}
+              />
+            )}
+          </div>
+          {google && (
+            <Summary
+              loading={loading}
               onSubmit={handleBooking}
               disabled={!canSubmit || loading}
-            /> }
-          </div>
-          {google &&
-          <Summary
-            loading={loading}
-            onSubmit={handleBooking}
-            disabled={!canSubmit || loading}
-            hidden={showModal}
-          /> }
+              hidden={showModal}
+            />
+          )}
         </div>
         <div className={`${"h-40"} `} />
       </Layout>

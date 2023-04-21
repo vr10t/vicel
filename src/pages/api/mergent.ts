@@ -4,6 +4,7 @@ import sgMail from "@sendgrid/mail";
 import dayjs from "dayjs";
 import calendar from "dayjs/plugin/calendar";
 import { logApiRequest } from "../../utils/helpers";
+import { getServiceSupabase } from "../../utils/supabaseClient";
 
 dayjs.extend(calendar);
 
@@ -11,7 +12,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { to, secret, date, bookingLink, name, location, destination } =
+  const { to, secret, date, bookingLink, name, location, destination, bookingId } =
     JSON.parse(req.body);
 
   console.log(to, secret);
@@ -1120,6 +1121,14 @@ export default async function handler(
   };
   console.log("trying to send to: ", to);
   console.log("api key: ", process.env.SENDGRID_API_KEY);
+
+  // if booking is cancelled, don't send email
+  const supabase = getServiceSupabase();
+  const {data} = await supabase.from("bookings").select("*").eq("id", bookingId).single();
+
+  if (data?.status !== "Confirmed") { 
+    return res.status(200).send("Booking is cancelled");
+  }
   let status = 500;
   sgMail
     .send(msg)
