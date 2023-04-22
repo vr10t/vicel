@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import {toast} from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import { BsArrowReturnLeft } from "@react-icons/all-files/bs/BsArrowReturnLeft";
 import ReactModal from "react-modal";
 import Layout from "../../components/Layout";
@@ -118,8 +118,8 @@ export default function Summary() {
       bookingId,
       amount: total_trip_price,
       secret,
-      subtotal: formatAmountForDisplay(price ?? total_trip_price, "GBP"),
-      grand: formatAmountForDisplay(price ?? total_trip_price, "GBP"),
+      subtotal: formatAmountForDisplay(total_trip_price, "GBP"),
+      grand: formatAmountForDisplay(total_trip_price + 5, "GBP"),
       name: first_name,
       email,
       location,
@@ -127,7 +127,7 @@ export default function Summary() {
       dateTime,
       coupon,
     });
-    const {checkoutSession, statusCode} = response;
+    const { checkoutSession, statusCode } = response;
     if (!statusCode?.toString().startsWith("2")) {
       toast.error(response.message);
       setLoading(false);
@@ -192,7 +192,6 @@ export default function Summary() {
       toast.error(error.message);
     },
   });
-
 
   useEffect(() => {
     setPageLoaded(true);
@@ -354,6 +353,12 @@ export default function Summary() {
                     formatAmountForDisplay(total_trip_price, "GBP")}
                 </p>
               </div>
+              <div className="flex justify-between px-4 pt-4 m-auto bg-white shadow gap-4 ">
+                <p className="text-gray-600 ">Airport Parking Fee</p>
+                <p className="text-gray-600 ">
+                  {formatAmountForDisplay(5, "GBP")}
+                </p>
+              </div>
               {couponSuccess && total_trip_price && (
                 <div className="flex justify-between px-4 pt-4 m-auto bg-white shadow gap-4 ">
                   <p className="text-gray-600 ">Discount</p>
@@ -366,7 +371,9 @@ export default function Summary() {
                 <p className="text-2xl font-medium text-gray-900 ">
                   Grand Total
                 </p>
-                <p className="text-2xl text-gray-600 ">{formatAmountForDisplay(total_trip_price, "GBP")}</p>
+                <p className="text-2xl text-gray-600 ">
+                  {formatAmountForDisplay(total_trip_price + 5, "GBP")}
+                </p>
               </div>
               {/**
                *coupon redemption
@@ -398,7 +405,7 @@ export default function Summary() {
               <div className="flex flex-col items-center justify-center mt-2 gap-2">
                 <div className="flex items-center">
                   <Link href={dest ? `/fixed-rates/${dest}` : "/booking"}>
-                    <a className="flex my-4 hover:text-blue-600 text-blue-700">
+                    <a className="flex my-4 text-blue-700 hover:text-blue-600">
                       <BsArrowReturnLeft className="z-0 mr-2 text-2xl font-extrabold text-center" />{" "}
                       Back to order
                     </a>
@@ -407,11 +414,11 @@ export default function Summary() {
                     <p className="text-red-600">{distanceWarning}</p>
                   )}
                 </div>
-                <div className="flex justify-center items-center mb-4 w-full">
+                <div className="flex items-center justify-center w-full mb-4">
                   <button
                     type="submit"
                     onClick={submit}
-                    className="btn lg w-5/6"
+                    className="w-5/6 btn lg"
                   >
                     Book Now
                   </button>

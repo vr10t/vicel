@@ -49,7 +49,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     ) {
       console.log("missing data");
       console.log(req.body);
-      return res.status(400).json({statusCode:400, message: "Missing parameters" });
+      return res
+        .status(400)
+        .json({ statusCode: 400, message: "Missing parameters" });
     }
     // const { data: booking, error } = await supabase
     //   .from('bookings')
@@ -74,6 +76,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
               currency: CURRENCY,
               product_data: { name: `Booking for ${address}` },
               unit_amount: formatAmountForStripe(amount, CURRENCY),
+            },
+            quantity: 1,
+          },
+          //Airport Parking Fee
+          {
+            price_data: {
+              currency: CURRENCY,
+              product_data: { name: `Airport Parking Fee` },
+              unit_amount: formatAmountForStripe(5, CURRENCY),
             },
             quantity: 1,
           },
@@ -107,14 +118,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           bookingLink: `${req.headers.origin}/b/${bookingId}?sid=${secret}`,
         },
       };
-      console.log("params", params)
+      console.log("params", params);
 
       const checkoutSession: Stripe.Checkout.Session =
         await stripe.checkout.sessions.create(params);
       const sessionId = checkoutSession.id;
       console.log("checkout session created", checkoutSession);
 
-      res.status(200).json({statusCode:200, checkoutSession});
+      res.status(200).json({ statusCode: 200, checkoutSession });
     } catch (err: any) {
       console.log("checkout session error", err);
       res.status(500).json({ statusCode: 500, message: err.message });
