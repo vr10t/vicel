@@ -2,6 +2,7 @@ import z from "zod";
 import { TRPCError } from "@trpc/server";
 import sgMail from "@sendgrid/mail";
 import { createRouter } from "./context";
+import { env } from "../env.mjs";
 
 export const sendgrid = createRouter()
   .mutation("sendEmail", {
@@ -12,7 +13,7 @@ export const sendgrid = createRouter()
       html: z.string().min(1),
     }),
     async resolve({ input, ctx }) {
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+      sgMail.setApiKey(env.SENDGRID_API_KEY);
       const msg = {
         to: input.to, // Change to your recipient
         from: "bookings@vicel.co.uk", // Change to your verified sender
@@ -46,12 +47,12 @@ export const sendgrid = createRouter()
         headers: {
           "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
         },
-        body: `response=${captcha}&secret=${process.env.HCAPTCHA_SECRET_KEY}`,
+        body: `response=${captcha}&secret=${env.HCAPTCHA_SECRET_KEY}`,
         method: "POST",
       });
       const data = await response.json();
       if (data.success) {
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+        sgMail.setApiKey(env.SENDGRID_API_KEY);
         const msg = {
           to: "contact@vicel.co.uk",
           from: "forms@vicel.co.uk",

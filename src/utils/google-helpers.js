@@ -1,4 +1,5 @@
 import { Loader } from "@googlemaps/js-api-loader";
+import { env } from "../server/env.mjs";
 
 
 export  function handleGetDistance(location, destination,callback,date) {
@@ -6,7 +7,7 @@ export  function handleGetDistance(location, destination,callback,date) {
   let service
   
    const loader = new Loader({
-        apiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
+        apiKey: env.NEXT_PUBLIC_GOOGLE_API_KEY,
         version: "weekly",
         libraries: ["places"],
       });
@@ -48,7 +49,7 @@ export  function handleGetDistance(location, destination,callback,date) {
   export async function reverseGeocode(lat, long) {
     try {
       const res = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${env.NEXT_PUBLIC_GOOGLE_API_KEY}`
       );
       const data = await res.json();
       return (data.results[0].formatted_address);

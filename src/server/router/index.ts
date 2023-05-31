@@ -8,6 +8,7 @@ import { distance } from "./distance";
 import { stripe } from "./stripe";
 import { sendgrid } from "./sendgrid";
 import { promo } from "./promo";
+import { cancel } from "./cancel";
 
 export const appRouter = createRouter()
   .transformer(superjson)
@@ -17,7 +18,8 @@ export const appRouter = createRouter()
   .merge("distance.", distance)
   .merge("stripe.", stripe)
   .merge("sendgrid.", sendgrid)
-  .merge("promo.", promo);
+  .merge("promo.", promo)
+  .merge("cancel.", cancel);
 
 // export type definition of API
 export type AppRouter = typeof appRouter;

@@ -14,14 +14,13 @@ type BookingRow = Database["public"]["Tables"]["bookings"]["Row"];
 
 export default function BookingConfirmation() {
   const router = useRouter();
-  const { id: bookingId, qsid } = router.query;
+  const { id: sessionId, qsid } = router.query;
   const [booking, setBooking] = useState<BookingRow | null>();
   const [paymentIntent, setPaymentIntent] = useState<any>();
   const [status, setStatus] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [err, setError] = useState<string>("");
   const { user } = userStore();
-  const confirmUser = trpc.useMutation("user.confirm");
   const b = trpc.useQuery(["bookings.verify", { secret: qsid as string }], {
     enabled: !!qsid,
     refetchOnWindowFocus: false,
@@ -38,18 +37,18 @@ export default function BookingConfirmation() {
       setLoading(false);
     },
   });
-  const isValidBookingId = (bookingId:string) => {
-  const regex = /^[A-Za-z0-9_-]{20}$/;
-  return regex.test(bookingId);
+  const isValidCheckoutSession = (id:string) => {
+  const regex = /^cs_(live|test)_[A-Za-z0-9]{64}$/;
+  return regex.test(id);
 };
   const getPaymentIntent = async () => {
-    if (!isValidBookingId(bookingId as string)) {
+    if (!isValidCheckoutSession(sessionId as string)) {
       setError("Invalid booking id");
       setLoading(false);
       return;
     }
     setLoading(true);
-    fetch(`/api/checkout_sessions/${bookingId}`)
+    fetch(`/api/checkout_sessions/${sessionId}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.statusCode === 500) {
@@ -76,10 +75,10 @@ export default function BookingConfirmation() {
   useEffect(() => {
     setLoading(true);
     //if id starts with "cs_" it's a payment intent
-    if (bookingId && (bookingId! as string).startsWith("cs_")) {
+    if (sessionId&& isValidCheckoutSession(sessionId as string)) {
       getPaymentIntent();
     }
-  }, [bookingId]);
+  }, [sessionId]);
 
   if (loading) {
     return (

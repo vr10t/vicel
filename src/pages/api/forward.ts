@@ -6,6 +6,7 @@ import Cors from "micro-cors";
 import sgMail from "@sendgrid/mail";
 import { getServiceSupabase } from "../../utils/supabaseClient";
 import { logApiRequest } from "../../utils/helpers";
+import { env } from "../../server/env.mjs";
 
 const cors = Cors({
   allowMethods: ["POST", "HEAD"],
@@ -13,12 +14,12 @@ const cors = Cors({
 export const config = { api: { bodyParser: false } };
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // eslint-disable-next-line new-cap
-  const stripe = new initStripe(process.env.STRIPE_SECRET_KEY!, {
+  const stripe = new initStripe(env.STRIPE_SECRET_KEY, {
     // https://github.com/stripe/stripe-node#configuration
     apiVersion: "2022-11-15",
   });
   const signature: any = req.headers["stripe-signature"];
-  const signingSecret = process.env.STRIPE_FW_SIGNING_SECRET!;
+  const signingSecret = env.STRIPE_FW_SIGNING_SECRET;
   const reqBuffer = await buffer(req);
   const supabase = getServiceSupabase();
   let event;
@@ -29,18 +30,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(400).json(`Webhook error: ${error}`);
   }
 
-  const session = event?.data.object as Stripe.Checkout.Session;
-  const bookingId = session.metadata?.bookingId;
-  const name = session.metadata?.name;
-  const subtotal = session.metadata?.subtotal;
-  const grand = session.metadata?.grand;
-  const location = session.metadata?.location;
-  const destination = session.metadata?.destination;
-  const dateTime = session.metadata?.dateTime;
-  const return_location = session.metadata?.return_location;
-  const return_destination = session.metadata?.return_destination;
-  const returnDateTime = session.metadata?.returnDateTime;
-  const bookingLink = session.metadata?.bookingLink;
+  const session = event?.data.object as Stripe.Checkout.Session | undefined;
+  const bookingId = session?.metadata?.bookingId;
+  const name = session?.metadata?.name;
+  const subtotal = session?.metadata?.subtotal;
+  const grand = session?.metadata?.grand;
+  const location = session?.metadata?.location;
+  const destination = session?.metadata?.destination;
+  const dateTime = session?.metadata?.dateTime;
+  const return_location = session?.metadata?.return_location;
+  const return_destination = session?.metadata?.return_destination;
+  const returnDateTime = session?.metadata?.returnDateTime;
+  const bookingLink = session?.metadata?.bookingLink;
 
   logApiRequest(req, {
     bookingId,
@@ -50,8 +51,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     location,
     destination,
     dateTime,
-    return_location,
-    return_destination,
+    return_location, return_destination,
     returnDateTime,
     bookingLink,
   });
@@ -61,10 +61,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .select("*")
     .eq("id", bookingId);
   if (!data) {
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+    sgMail.setApiKey(env.SENDGRID_API_KEY);
     const response = await sgMail.send({
       to: "contact@vicel.co.uk",
-      bcc: process.env.BCC_EMAIL,
+      bcc: env.BCC_EMAIL,
       from: "bookings@vicel.co.uk",
       subject: "New booking",
       text: "You have a new booking. Please check your dashboard",
@@ -72,8 +72,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(200).send(JSON.stringify({ received: true }));
   }
   const booking = data[0];
+  console.log(booking);
   const {
-    distance,
     service,
     flight_number,
     first_name,
@@ -96,14 +96,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const destinationLink = `https://www.google.com/maps/place/${destination}`;
   const returnLocationLink = `https://www.google.com/maps/place/${return_location}`;
   const returnDestinationLink = `https://www.google.com/maps/place/${return_destination}`;
-  const stripeLink = `https://dashboard.stripe.com/payments/${session.payment_intent}`;
-  const cancelLink = `https://www.vicel.co.uk/admin/cancel/${bookingId}?secret=${booking.secret}&admin_secret=${process.env.ADMIN_SECRET}`;
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+  const stripeLink = `https://dashboard.stripe.com/payments/${session?.payment_intent}`;
+  const cancelLink = `https://www.vicel.co.uk/admin/cancel/${bookingId}?secret=${booking.secret}&session_id=${session?.id}`;
+  sgMail.setApiKey(env.SENDGRID_API_KEY);
 
   const msg = {
-    to: "contact@vicel.co.uk",
+    to: env.FW_EMAIL,
     from: "bookings@vicel.co.uk",
-    bcc: process.env.BCC_EMAIL,
+    bcc: env.BCC_EMAIL,
     subject: "New Booking",
     html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
@@ -325,10 +325,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   };
   try {
     console.log("Sending email");
-    await sgMail.send(msg);
+    sgMail.send(msg).then(() => {
+      console.log("Email sent");
     res.status(200).json("Email sent");
+    }).catch((err) => {
+      console.log(err);
+      res.status(503).send(JSON.stringify(err));
+    });
   } catch (err: any) {
-    res.status(400).end("Error confirming booking");
+    return res.status(503).send(JSON.stringify(err));
   }
 };
 

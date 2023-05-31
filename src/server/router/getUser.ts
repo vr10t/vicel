@@ -3,6 +3,7 @@ import { z } from "zod";
 import UAParser from "ua-parser-js";
 import { createRouter } from "./context";
 import { getServiceSupabase } from "../../utils/supabaseClient";
+import { env } from "../env.mjs";
 
 export const getUser = createRouter()
   .mutation("update", {
@@ -108,4 +109,11 @@ export const getUser = createRouter()
       );
       return { data, error };
     },
-  })
+  }).query("isAdmin", {
+    input: z.object({
+      id: z.string(),
+      }),
+    async resolve({ input, ctx }) {
+      return input.id === env.ADMIN_ID;
+    },
+  });

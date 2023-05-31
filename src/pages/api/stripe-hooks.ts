@@ -14,6 +14,7 @@ import Mergent from "mergent";
 import dayjs from "dayjs";
 import { getServiceSupabase } from "../../utils/supabaseClient";
 import { logApiRequest } from "../../utils/helpers";
+import { env } from "../../server/env.mjs";
 
 export interface Event {
   id: string;
@@ -139,17 +140,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   console.time();
   const supabase = getServiceSupabase();
   // eslint-disable-next-line new-cap
-  const stripe = new initStripe(process.env.STRIPE_SECRET_KEY!, {
+  const stripe = new initStripe(env.STRIPE_SECRET_KEY, {
     // https://github.com/stripe/stripe-node#configuration
     apiVersion: "2022-11-15",
   });
 
   const signature: any = req.headers["stripe-signature"];
-  const signingSecret = process.env.STRIPE_SIGNING_SECRET!;
+  const signingSecret = env.STRIPE_SIGNING_SECRET;
   const reqBuffer = await buffer(req);
   let event;
   // set the Mergent API key
-  const mergent = new Mergent(process.env.MERGENT_API_KEY!);
+  const mergent = new Mergent(env.MERGENT_API_KEY);
 
   // return res.status(200).json({reqBuffer});
   try {
@@ -161,6 +162,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   } catch (error: any) {
     res.status(400).json(`Webhook error: ${error}`);
   }
+  const { metadata } = event!.data.object;
   switch (event?.type) {
     case "checkout.session.completed":
       // Handle the checkout.session.completed event
@@ -211,15 +213,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
               destination: event.data.object.metadata.destination,
               returnDestination: event.data.object.metadata.return_destination,
 
-              secret: process.env.API_ROUTE_SECRET,
+              secret: env.API_ROUTE_SECRET,
             }),
           },
           scheduled_for: dayjs(event.data.object.metadata.dateTime)
             .subtract(1, "day")
             .toISOString(),
         })
-        .then((task) => {
+        .then(async (task) => {
           console.log("Mergent task created");
+
+          await supabase
+            .from("bookings")
+            .update({
+              task_id: task.id,
+            })
+            .eq("id", metadata.bookingId);
+
           res.status(200).json("Mergent task created");
         })
         .catch((error) => console.error(error));

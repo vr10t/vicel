@@ -10,6 +10,7 @@ import "@testing-library/jest-dom/extend-expect";
 import { renderWithTRPC } from "./testUtils";
 import Layout from "../components/Layout";
 import { Loader } from "../../__mocks__/googleMapsLoader";
+import { env } from "../server/env.mjs";
 
 jest.mock("../utils/supabaseClient", () => {
   const mockSupabaseClient = jest.requireActual(
@@ -66,7 +67,7 @@ describe("Form", () => {
   });
   test("should load Google Maps API with the correct configuration", () => {
       expect(Loader).toHaveBeenCalledWith({
-        apiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY!,
+        apiKey: env.NEXT_PUBLIC_GOOGLE_API_KEY,
         version: "weekly",
         libraries: ["places"],
       });

@@ -4,6 +4,7 @@ import initStripe from "stripe";
 import { TRPCError } from "@trpc/server";
 import { createRouter } from "./context";
 import { logRequest } from "../../utils/helpers";
+import { env } from "../env.mjs";
 
 export const promo = createRouter()
   .mutation("create", {
@@ -13,7 +14,7 @@ export const promo = createRouter()
 
     async resolve({ input, ctx }) {
       // eslint-disable-next-line new-cap
-      const stripe = new initStripe(process.env.STRIPE_SECRET_KEY!, {
+      const stripe = new initStripe(env.STRIPE_SECRET_KEY, {
         apiVersion: "2022-11-15",
       });
       const { name } = input;
@@ -39,7 +40,7 @@ export const promo = createRouter()
       logRequest(ctx.req, input);
       const { code } = input;
       // eslint-disable-next-line new-cap
-      const stripe = new initStripe(process.env.STRIPE_SECRET_KEY!, {
+      const stripe = new initStripe(env.STRIPE_SECRET_KEY, {
         apiVersion: "2022-11-15",
       });
 
@@ -71,7 +72,7 @@ export const promo = createRouter()
       const { email, code } = input;
 
       console.log("sending email", email, code);
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+      sgMail.setApiKey(env.SENDGRID_API_KEY);
 
       const msg = {
         from: "no-reply@vicel.co.uk",

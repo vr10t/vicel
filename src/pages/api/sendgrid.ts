@@ -5,6 +5,7 @@ import { buffer } from "micro";
 import Cors from "micro-cors";
 import sgMail from "@sendgrid/mail";
 import { logApiRequest } from "../../utils/helpers";
+import { env } from "../../server/env.mjs";
 
 const cors = Cors({
   allowMethods: ["POST", "HEAD"],
@@ -13,12 +14,12 @@ export const config = { api: { bodyParser: false } };
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   console.time();
   // eslint-disable-next-line new-cap
-  const stripe = new initStripe(process.env.STRIPE_SECRET_KEY!, {
+  const stripe = new initStripe(env.STRIPE_SECRET_KEY, {
     // https://github.com/stripe/stripe-node#configuration
     apiVersion: "2022-11-15",
   });
   const signature: any = req.headers["stripe-signature"];
-  const signingSecret = process.env.STRIPE_SG_SIGNING_SECRET!;
+  const signingSecret = env.STRIPE_SG_SIGNING_SECRET;
   const reqBuffer = await buffer(req);
   let event;
   // return res.status(200).send({reqBuffer});
@@ -58,7 +59,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     bookingLink,
   });
 
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+  sgMail.setApiKey(env.SENDGRID_API_KEY);
   const msg = {
     to: session.metadata!.email,
     from: "bookings@vicel.co.uk",
@@ -2070,7 +2071,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     await sgMail.send(msg);
     res.status(200).json("Email sent");
   } catch (err: any) {
-    res.status(400).end("Error confirming booking");
+    res.status(503).end(JSON.stringify(err));
   }
 };
 

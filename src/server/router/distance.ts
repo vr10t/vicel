@@ -3,6 +3,7 @@ import { z } from "zod";
 import UAParser from "ua-parser-js";
 import { createRouter } from "./context";
 import { logRequest } from "../../utils/helpers";
+import { env } from "../env.mjs";
 
 export interface Distance {
   text: string;
@@ -51,7 +52,7 @@ export const distance = createRouter().mutation("get", {
     const { location, destination, dateTime } = input;
 
     const res = await fetch(
-      `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${location}&destinations=${destination}&departure_time=now&key=${process.env.SECRET_GOOGLE_API_KEY}`
+      `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${location}&destinations=${destination}&departure_time=now&key=${env.SECRET_GOOGLE_API_KEY}`
     );
 
     const data = await res.json();

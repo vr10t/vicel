@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { NextApiRequest, NextApiResponse } from "next";
 import sgMail from "@sendgrid/mail";
+import { env } from "../../server/env.mjs";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const { name, email, phone } = req.body;
@@ -17,9 +18,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       ? "N/A"
       : dayjs(`${date} ${time}`).format("MMMM D, YYYY h:mm A");
   const msg = {
-    to: process.env.ACLASS_EMAIL,
+    to: env.ACLASS_EMAIL,
     from: "aclass@vicel.co.uk",
-    bcc: process.env.BCC_EMAIL,
+    bcc: env.BCC_EMAIL,
     subject: "New Message from A-Class Taxis Website",
     html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
@@ -96,7 +97,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             
 `,
   };
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+  sgMail.setApiKey(env.SENDGRID_API_KEY);
   sgMail
     .send(msg)
     .then(() => {

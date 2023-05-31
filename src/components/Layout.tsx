@@ -5,6 +5,7 @@ import { Loader } from "@googlemaps/js-api-loader";
 import Navbar from "./Navbar/V2";
 import Footer from "./Footer/Footer";
 import { secureStore } from "../store/bookingStore";
+import { env} from "../server/env.mjs"
 
 type Props = {
   children: ReactNode;
@@ -26,7 +27,7 @@ function Layout({ children, title, description }: Props) {
   useEffect(() => {
     if (globalThis.google) return;
     const loader = new Loader({
-      apiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY!,
+      apiKey: env.NEXT_PUBLIC_GOOGLE_API_KEY,
       version: "weekly",
       libraries: ["places"],
     });

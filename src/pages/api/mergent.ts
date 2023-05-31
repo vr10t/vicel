@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import calendar from "dayjs/plugin/calendar";
 import { logApiRequest } from "../../utils/helpers";
 import { getServiceSupabase } from "../../utils/supabaseClient";
+import { env } from "../../server/env.mjs";
 
 dayjs.extend(calendar);
 
@@ -27,14 +28,14 @@ export default async function handler(
     destination,
   });
 
-  if (secret !== process.env.API_ROUTE_SECRET) {
-    return res.status(401).send(process.env.API_ROUTE_SECRET);
+  if (secret !== env.API_ROUTE_SECRET) {
+    return res.status(401).send(env.API_ROUTE_SECRET);
   }
 
   const message = `Hi there, this is a reminder that your booking is ${dayjs().calendar(
     dayjs(date)
   )}. Please contact us in advance if there are any delays. If you need to cancel or reschedule, please reply to this email. Thank you.`;
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+  sgMail.setApiKey(env.SENDGRID_API_KEY);
   const msg = {
     // eslint-disable-next-line object-shorthand
     to: to,
@@ -1120,7 +1121,7 @@ export default async function handler(
         `,
   };
   console.log("trying to send to: ", to);
-  console.log("api key: ", process.env.SENDGRID_API_KEY);
+  console.log("api key: ", env.SENDGRID_API_KEY);
 
   // if booking is cancelled, don't send email
   const supabase = getServiceSupabase();
@@ -1138,7 +1139,7 @@ export default async function handler(
       sgMail.send({
         to: "contact@vicel.co.uk",
         from: "bookings@vicel.co.uk",
-        bcc: process.env.BCC_EMAIL,
+        bcc: env.BCC_EMAIL,
         subject: "Booking is tomorrow",
         text: `The booking for ${destination} is ${dayjs(date).calendar()}`,
       });

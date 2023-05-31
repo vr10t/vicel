@@ -2,11 +2,12 @@ import { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 import UAParser from "ua-parser-js";
 import { CURRENCY } from "../../../../config/index";
+import { env } from "../../../server/env.mjs";
 import { logRequest } from "../../../utils/helpers";
 import { formatAmountForStripe } from "../../../utils/stripe-helpers";
 import { getServiceSupabase } from "../../../utils/supabaseClient";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
   // https://github.com/stripe/stripe-node#configuration
   apiVersion: "2022-11-15",
 });

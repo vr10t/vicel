@@ -5,6 +5,7 @@ import { TRPCError } from "@trpc/server";
 import { createRouter } from "./context";
 import { getServiceSupabase } from "../../utils/supabaseClient";
 import { logRequest } from "../../utils/helpers";
+import { env } from "../env.mjs";
 
 export const stripe = createRouter()
   .mutation("processRefund", {
@@ -30,7 +31,7 @@ export const stripe = createRouter()
       const { chargeId } = input;
 
       // eslint-disable-next-line new-cap
-      const stripeClient = new initStripe(process.env.STRIPE_SECRET_KEY!, {
+      const stripeClient = new initStripe(env.STRIPE_SECRET_KEY, {
         // https://github.com/stripe/stripe-node#configuration
         apiVersion: "2022-11-15",
       });
@@ -67,7 +68,7 @@ export const stripe = createRouter()
         });
       }
       // eslint-disable-next-line new-cap
-      const stripeClient = new initStripe(process.env.STRIPE_SECRET_KEY!, {
+      const stripeClient = new initStripe(env.STRIPE_SECRET_KEY, {
         apiVersion: "2022-11-15",
       });
       const session = await stripeClient.checkout.sessions.retrieve(
@@ -103,7 +104,7 @@ export const stripe = createRouter()
         });
       }
       // eslint-disable-next-line new-cap
-      const stripeClient = new initStripe(process.env.STRIPE_SECRET_KEY!, {
+      const stripeClient = new initStripe(env.STRIPE_SECRET_KEY, {
         apiVersion: "2022-11-15",
       });
       const refund = await stripeClient.refunds.create({
