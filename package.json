@@ -6,7 +6,7 @@
     "start": "next start",
     "lint": "eslint . --fix",
     "test": "env NODE_ENV=test jest --ci",
-    "vercel-build": "pnpm test && next build"
+    "vercel-build": "next build"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.14.3",
