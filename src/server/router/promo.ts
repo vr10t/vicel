@@ -1121,15 +1121,13 @@ export const promo = createRouter()
 
         `,
       };
-      sgMail
-        .send(msg)
-        .then(() => {
-          console.log("Email sent");
-          return { success: true };
-        })
-        .catch((err) => {
-          console.log(err);
-          return { success: false };
-        });
+      try {
+        await sgMail.send(msg);
+        console.log("Email sent");
+        return { success: true };
+      } catch (error) {
+        console.log(JSON.stringify(error));
+        return { success: false };
+      }
     },
   });

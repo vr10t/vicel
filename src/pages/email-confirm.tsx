@@ -3,7 +3,7 @@ import { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
-import create from "zustand";
+import { create } from "zustand";
 import { useRouter } from "next/router";
 import { persist } from "zustand/middleware";
 import Layout from "../components/Layout";
@@ -38,10 +38,12 @@ export default function EmailConfirm() {
     dayjs().subtract(1, "hour")
   );
 
+  const [error, setError] = useState("");
   async function getUser() {
-    const { data, error } = await supabase.auth.getSession();
-    if (error) {
+    const { data, error:authError } = await supabase.auth.getSession();
+    if (authError) {
       // do nothing
+      setError(authError.message)
     }
     if (data) {
       const { session } = data;
@@ -88,6 +90,15 @@ export default function EmailConfirm() {
     );
   }, [user]);
 
+  if (error) {
+    return (
+      <Layout>
+        <div className="flex flex-col items-center justify-center min-h-screen py-2 -mt-24 text-center">
+          <h1 className="text-6xl font-bold">{error}</h1>
+        </div>
+      </Layout>
+    );
+  }
   if (!user) {
     return (
       <Layout>
